@@ -44,7 +44,7 @@ with open(argd["--file"]) as f:
                     k = 0
             case "}":
                 if in_str:
-                    daata[j][k] += "}"
+                    data[j][k] += "}"
                 elif comment:
                     pass
                 else:
