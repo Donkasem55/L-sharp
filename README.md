@@ -8,14 +8,14 @@ The way to print text to the console in L# is:
 include stdout.asm;
 include exit.asm;
 
-entry \\\_start;
+entry _start;
 
 varinit;
 
 byte hello => "Hello, world!", 0;
 pipe hellolen => $-hello;
 
-func \\\_start => {
+func _start => {
 	stdout <= hello <= hellolen; // Write hello to console
 	exit <= 0;
 }
