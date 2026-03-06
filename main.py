@@ -1,5 +1,6 @@
 import sys
 
+vartype = {}
 args = sys.argv[1:]
 kernel = "win32"
 argd = {"--kernel":kernel}
@@ -44,7 +45,7 @@ with open(argd["--file"]) as f:
                     k = 0
             case "}":
                 if in_str:
-                    daata[j][k] += "}"
+                    data[j][k] += "}"
                 elif comment:
                     pass
                 else:
@@ -143,23 +144,29 @@ while i < linecount:
                 externs.append(j)
     elif line[0] == "entry":
         mainfn = line[1]
-        out = ["section .txt:", f"global {mainfn}"] + out
+        out = ["section .text", f"global {mainfn}"] + out
     elif line[0] == "varinit":
         try:
-            if pre[0] != "section .data:":
-                pre = ["section .data:"] + pre
+            if pre[0] != "default rel\nsection .data":
+                pre = ["default rel\nsection .data"] + pre
         except IndexError:
-            pre = ["section .data:"]
+            pre = ["default rel\nsection .data"]
         try:
-            if bss[0] != "section .bss:":
-                bss = ["section .bss:"] + bss
+            if bss[0] != "section .bss":
+                bss = ["section .bss"] + bss
         except IndexError:
-            bss = ["section .bss:"]
+            bss = ["section .bss"]
     elif line[0] == "byte":
-        if line[2] == "=>":
-            pre.append(f"{line[1]} db {" ".join(line[3:])}")
-        elif line[2] == "<=":
-            bss.append(f"{line[1]}: resb {line[3]}")
+        try:
+            if line[2] == "=>":
+                pre.append(f"{line[1]} db {" ".join(line[3:])}")
+                vartype[line[1]] = "byte"
+            elif line[2] == "<=":
+                bss.append(f"{line[1]}: resb {line[3]}")
+                vartype[line[1]] = "byteptr"
+        except IndexError:
+            bss.append(f"{line[1]}: resb 1")
+            vartype[line[1]] = "byteptr"
     elif line[0] == "pipe":
         try:
             if line[2] == "=>":
@@ -172,8 +179,13 @@ while i < linecount:
         try:
             if line[2] == "=>":
                 pre.append(f"{line[1]} dw {line[3]}")
+                vartype[line[1]] = "short"
         except IndexError:
             pre.append(f"{line[1]}: resb 2")
+            vartype[line[1]] = "shortptr"
+    elif line[0] == "dword":
+        if line[2] == "<=":
+            bss.append(f"{line[1]}: resd {line[3]}")
 
 
     elif line[0] == "asmdef":
@@ -204,10 +216,24 @@ while i < linecount:
             scope.pop()
         try:
             if line[1] == "<=":
-                out.append(f"mov r12, {line[2]}")
+                if line[2].startswith("(ptr)"):
+                    out.append(f"lea r12, [{''.join(line[2][5:])}]")
+                else:
+                    out.append(f"mov r12, {line[2]}")
                 try:
                     if line[3] == "<=":
-                        out.append(f"mov r13d, {line[4]}")
+                        if line[4].startswith("(ptr)"):
+                            out.append(f"lea r13d, [{''.join(line[4][5:])}]")
+                        else:
+                            out.append(f"mov r13d, {line[4]}")
+                        try:
+                            if line[5] == "<=":
+                                if line[6].startswith("(ptr)"):
+                                    out.append(f"lea r14, [{''.join(line[6][5:])}]")
+                                else:
+                                    out.append(f"mov r14, {line[6]}")
+                        except IndexError:
+                            pass
                 except IndexError:
                     pass
                 out = out + libs[line[0]]
@@ -217,6 +243,7 @@ while i < linecount:
     i += 1
        
 links = list(set(links))
+externs = list(set(externs))
 
 if "--output" not in argd:
     print(links)

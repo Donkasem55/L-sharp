@@ -1,4 +1,6 @@
 build/
 dist/
-compile.bat
-main.lshrp
+*.bat
+*.lshrp
+*.zip
+*.spec
