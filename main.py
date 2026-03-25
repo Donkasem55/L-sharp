@@ -50,8 +50,9 @@ with open(argd["--file"]) as f:
                     pass
                 else:
                     data[j].append("}")
-                    data[j].append("")
-                    k += 2
+                    data.append([""])
+                    k = 0
+                    j += 1
             case " ":
                 if in_str:
                     data[j][k] += " "
@@ -170,6 +171,7 @@ fncs = []
 linecount = len(data)
 i = 0
 while i < linecount:
+    print(scope)
     line = data[i]
 
     if line == [] or line[0].startswith("//"):
@@ -272,7 +274,7 @@ while i < linecount:
 
     else:
         try:
-            if line[1] == "<=" and line[0] not in libs:
+            if line[1] == "<=" and line[0] not in libs and line[0] not in fncs:
                 out.append(f"mov {line[0]}, {line[2]}")
                 i += 1
                 continue
@@ -288,11 +290,14 @@ while i < linecount:
                         fncs.append(line[1])
                     else:
                         print(f"ScopeError: func {' '.join(line[1:])}, at line {i}: function definition outside 'global'")
+                        sys.exit(1)
             except IndexError:
                 print(f"SyntaxError: func {line[1]}, at line {i}: incomplete function definition")
                 sys.exit(1)
         elif line[0] == "}":
             scope.pop()
+            if out[-1] != "ret":
+                out.append("ret")
 
         try:
             if line[1] == "<=":
