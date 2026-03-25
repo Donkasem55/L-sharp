@@ -11,13 +11,11 @@ moves 5 into RAX, same with
 asm mov rax, 5
 ```
 
-The way to print text to the console in L# is:
+The following code prints "Hello, world!" to the console and exits with exit code 0.
 
 ```
 include stdout.asm;
 include exit.asm;
-
-entry _start;
 
 varinit;
 
@@ -30,15 +28,23 @@ func _start => {
 }
 ```
 
-Usage:
+# Arguments:
+Compile main.lshrp for windows and output it to main.asm:
 ```
-lshrp.exe main.lshrp -O main.asm
+lshrp.exe main.lshrp --output main.asm
 ```
+Compile main.lshrp for windows and print the result (as a python list) to the console:
 ```
-./lshrp main.lshrp -O main.asm
+lshrp.exe main.lshrp
 ```
+Compile main.lshrp for Linux and output the result to main.asm:
 ```
-python main.py main.lshrp -O main.asm
+lshrp.exe main.lshrp --kernel linux --output main.asm
 ```
 
-Note: L# has never been tested on Linux.
+# All options:
+--file (-I): input file (relative/absolute path, first positional argument by default, errors if not provided)
+--output (-O): output file (relative/absolute path, prints output to the console if not provided)
+--kernel: the kernel the code is compiled for (win32/linux, default win32)
+
+Note: L# has not been tested on Linux yet.
