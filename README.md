@@ -45,7 +45,10 @@ lshrp.exe main.lshrp --kernel linux --output main.asm
 
 ### All options:
 --file (-I): input file (relative/absolute path, first positional argument by default, errors if not provided)
+
 --output (-O): output file (relative/absolute path, prints output to the console if not provided)
+
 --kernel: the kernel the code is compiled for (win32/linux, default win32)
+
 
 Note: L# has not been tested on Linux yet.
