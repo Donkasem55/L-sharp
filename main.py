@@ -1,4 +1,4 @@
-import sys
+import sys, os
 
 vartype = {}
 args = sys.argv[1:]
@@ -21,6 +21,7 @@ for i in args:
         argd[arg] = i
 
 kernel = argd["--kernel"]
+scr = str(os.path.abspath(os.path.dirname(__file__))).replace("\\", "/")
 
 with open(argd["--file"]) as f:
     data = [[""]]
@@ -162,7 +163,7 @@ pre = []
 out = []
 links = []
 externs = []
-mainfn = ""
+mainfn = "_start"
 libs = {}
 bss = []
 scope = ["global"]
@@ -171,7 +172,6 @@ fncs = []
 linecount = len(data)
 i = 0
 while i < linecount:
-    print(scope)
     line = data[i]
 
     if line == [] or line[0].startswith("//"):
@@ -179,7 +179,7 @@ while i < linecount:
         continue
 
     if line[0] == "include":
-        with open(f"stdlib/{kernel}/{line[1]}") as f:
+        with open(f"{scr}/stdlib/{kernel}/{line[1]}") as f:
             asm = f.read().splitlines()
             include = asm[4:]
             lnk = asm[0].split(" ")
@@ -202,7 +202,6 @@ while i < linecount:
 
     elif line[0] == "entry":
         mainfn = line[1]
-        out = ["section .text", f"global {mainfn}"] + out
 
     elif line[0] == "varinit":
         try:
@@ -338,6 +337,8 @@ while i < linecount:
                 out = out + libs[line[0]]
 
     i += 1
+
+out = ["section .text", f"global {mainfn}"] + out
        
 links = list(set(links))
 externs = list(set(externs))
