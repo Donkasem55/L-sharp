@@ -28,7 +28,8 @@ func _start => {
 }
 ```
 
-# Arguments:
+## CLI Arguments:
+### Examples:
 Compile main.lshrp for windows and output it to main.asm:
 ```
 lshrp.exe main.lshrp --output main.asm
@@ -42,7 +43,7 @@ Compile main.lshrp for Linux and output the result to main.asm:
 lshrp.exe main.lshrp --kernel linux --output main.asm
 ```
 
-# All options:
+### All options:
 --file (-I): input file (relative/absolute path, first positional argument by default, errors if not provided)
 --output (-O): output file (relative/absolute path, prints output to the console if not provided)
 --kernel: the kernel the code is compiled for (win32/linux, default win32)
