@@ -52,6 +52,7 @@ lshrp.exe main.lshrp --kernel linux --output main.asm
 
 
 Note: L# has not been tested on Linux yet.
+
 THIS DOCUMENTATION IS INCOMPLETE.
 
 # Features
