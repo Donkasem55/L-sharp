@@ -4,6 +4,8 @@
 # AND THEN CD-ING INTO THE REPOSITORY, cd L-sharp
 # FINALLY, YOU RUN THIS SCRIPT, .\make.ps1, TO BUILD IT. MAKE SURE YOU HAVE PYTHON INSTALLED.
 
+# YOU CAN ALSO USE A PACKAGE MANAGER IF ONE SUPPORTS THIS.
+
 Write-Output "Checking for Python..."
 
 $commands = @('python','python3','py')
@@ -94,6 +96,7 @@ if ($found) {
         cp dist\lshrp.exe C:\Users\$($env:USERNAME)\bin
     }
     Copy-Item -Path stdlib\* -Recurse -Destination "C:\Users\$($env:USERNAME)\bin" -Verbose
+    Write-Output "Finished!"
     exit 0
 } else {
     Write-Output "Error: Python not found. You may run winget install Python.Python.3.14 to install Python 3.14."
