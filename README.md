@@ -79,7 +79,7 @@ entry <function name>;
 ### varinit
 Initialises data sections. Syntax:
 ```
-varinit
+varinit;
 ```
 ### Variable definitions
 #### byte
@@ -144,6 +144,6 @@ return;
 ### =>
 Jumps to a location in memory. Syntax:
 ```
-jmp <address>
+jmp <address>;
 ```
 MORE KEYWORDS AND FEATURES TO BE DOCUMENTED
