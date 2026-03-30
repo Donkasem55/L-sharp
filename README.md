@@ -52,3 +52,98 @@ lshrp.exe main.lshrp --kernel linux --output main.asm
 
 
 Note: L# has not been tested on Linux yet.
+THIS DOCUMENTATION IS INCOMPLETE.
+
+# Features
+## Keywords
+### include
+Includes an assembly standard library. Syntax:
+```
+include <file name>;
+```
+### .macro
+Defines a macro. Syntax:
+```
+.macro <macro name> <macro value>;
+```
+### .import
+Imports another L# file, similar to #include in C. Syntax:
+```
+.import <file name>;
+```
+### entry
+Defines a specific entry point function instead of the default \_start. Syntax:
+```
+entry <function name>;
+```
+### varinit
+Initialises data sections. Syntax:
+```
+varinit
+```
+### Variable definitions
+#### byte
+Defines character variables (or array). Syntax:
+```
+byte <variable name> => <variable value>;
+```
+For uninitialised variables:
+```
+byte <variable name> <= <allocated memory in bytes>;
+```
+#### pipe
+Defines an assembly pipeline. Syntax:
+```
+pipe <variable name> => <assembly definition>;
+```
+Example:
+```
+pipe text_length => $-text;
+```
+#### short
+Defines a 16-bit integer. Syntax:
+```
+short <variable name> => <initial value>;
+```
+For uninitialised integers:
+```
+short <variable name>;
+```
+#### dword
+Defines a DWORD. Syntax:
+```
+dword <variable name> => <allocated memory>;
+```
+#### asmdef
+Defines a variable using inline assembly. Syntax:
+```
+asmdef <assembly definition>;
+```
+### asm
+Inline Assembly. Syntax:
+```
+asm <assembly code>;
+```
+### label
+Creates a new label, local or global. Syntax:
+```
+label <label name>;
+```
+### func
+Defines a function. Syntax:
+```
+func <function name> => {
+    <function codeblock>
+}
+```
+###  return
+Ends a function. Syntax:
+```
+return;
+```
+### =>
+Jumps to a location in memory. Syntax:
+```
+jmp <address>
+```
+MORE KEYWORDS AND FEATURES TO BE DOCUMENTED
