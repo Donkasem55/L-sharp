@@ -25,9 +25,15 @@ scr = str(os.path.abspath(os.path.dirname(__file__))).replace("\\", "/")
 ma = {}
 
 with open(argd["--file"]) as f:
-    tx = ""
+    tex = f.read()
+
+imp = True
+
+while imp:
+    imp = False
     i = 0
-    x = f.read().replace("\t", "").split(";")
+    x = tex.replace("\t", "").split(";")
+    tex = ""
     while i < len(x):
         y = [j.lstrip() for j in x[i].split(" ")]
         if not y:
@@ -37,12 +43,15 @@ with open(argd["--file"]) as f:
             ma[y[1]] = " ".join(y[2:])
         elif y[0] == ".import":
             with open(y[1]) as f:
-                tx += f.read()
+                tex += f.read()
+            imp = True
         else:
-            tx += " ".join(y)
-            tx += ";"
+            tex += " ".join(y)
+            tex += ";"
         i += 1
-        
+    
+tx = tex
+
 
 if True:
     f = tx
