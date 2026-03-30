@@ -153,6 +153,7 @@ with open(argd["--file"]) as f:
                         data[j][k] += lisx[i]
         i += 1
 
+print(data)
 i = 0
 while i < len(data):
     while '' in data[i]:
@@ -277,6 +278,21 @@ while i < linecount:
                 out.append(f"mov {line[0]}, {line[2]}")
                 i += 1
                 continue
+
+            elif line[1] == "<":
+                match line[2]:
+                    case "+":
+                        out.append(f"add {line[0]}, {line[3]}")
+
+                    case "-":
+                        out.append(f"sub {line[0]}, {line[3]}")
+
+                    case "*":
+                        out.append(f"imul {line[0]}, {line[3]}")
+
+                    case "/":
+                        out.append(f"idiv {line[0]}, {line[3]}")
+
         except IndexError:
             pass
 
