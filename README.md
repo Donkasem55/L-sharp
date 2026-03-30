@@ -144,6 +144,6 @@ return;
 ### =>
 Jumps to a location in memory. Syntax:
 ```
-jmp <address>;
+=> <address>;
 ```
 MORE KEYWORDS AND FEATURES TO BE DOCUMENTED
