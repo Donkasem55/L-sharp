@@ -22,10 +22,32 @@ for i in args:
 
 kernel = argd["--kernel"]
 scr = str(os.path.abspath(os.path.dirname(__file__))).replace("\\", "/")
+ma = {}
 
 with open(argd["--file"]) as f:
+    tx = ""
+    i = 0
+    x = f.read().replace("\t", "").split(";")
+    while i < len(x):
+        y = [j.lstrip() for j in x[i].split(" ")]
+        if not y:
+            i += 1
+            continue
+        if y[0] == ".macro":
+            ma[y[1]] = " ".join(y[2:])
+        elif y[0] == ".import":
+            with open(y[1]) as f:
+                tx += f.read()
+        else:
+            tx += " ".join(y)
+            tx += ";"
+        i += 1
+        
+
+if True:
+    f = tx
     data = [[""]]
-    x = f.read().replace("\t", "")
+    x = f.replace("\t", "")
     i = 0
     lisx = list(x)
     comment = False
@@ -153,7 +175,6 @@ with open(argd["--file"]) as f:
                         data[j][k] += lisx[i]
         i += 1
 
-print(data)
 i = 0
 while i < len(data):
     while '' in data[i]:
@@ -178,6 +199,10 @@ while i < linecount:
     if line == [] or line[0].startswith("//"):
         i += 1
         continue
+
+    for j in range(len(line)):
+        if line[j] in ma:
+            line[j] = ma[line[j]]
 
     if line[0] == "include":
         with open(f"{scr}/stdlib/{kernel}/{line[1]}") as f:
