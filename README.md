@@ -151,7 +151,10 @@ Jumps to a location in memory. Syntax:
 ### <+, <-, <\*, \</
 Arithmetic operations. Syntax:
 ```
-<+
+<variable/register> <+ <source/integer literal>;
+<variable/register> <- <source/integer literal>;
+<variable/register> <* <source/integer literal>;
+<variable/register> </ <source/integer literal>;
 ```
 ### Function/stdlib execution
 Execute functions and standard libraries with:
@@ -161,6 +164,8 @@ Execute functions and standard libraries with:
 With arguments:
 ```
 <function/stdlib name> <= arg1;
+<function/stdlib name> <= arg1 <= arg2;
+...
 ```
 L# currently only supports up to 3 arguments. Sorry for the inconvenience.
 
