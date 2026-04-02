@@ -147,4 +147,20 @@ Jumps to a location in memory. Syntax:
 ```
 => <address>;
 ```
-MORE KEYWORDS AND FEATURES TO BE DOCUMENTED
+## Features (built-in)
+### <+, <-, <\*, \</
+Arithmetic operations. Syntax:
+```
+<+
+```
+### Function/stdlib execution
+Execute functions and standard libraries with:
+```
+<function/stdlib name>;
+```
+With arguments:
+```
+<function/stdlib name> <= arg1;
+```
+L# currently only supports up to 3 arguments. Sorry for the inconvenience.
+
