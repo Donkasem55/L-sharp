@@ -137,6 +137,13 @@ func <function name> => {
     <function codeblock>
 }
 ```
+### func
+Declares a while loop. Syntax:
+```
+while (<condition>) => {
+    <while loop codeblock>
+}
+```
 ###  return
 Ends a function. Syntax:
 ```
