@@ -366,21 +366,33 @@ def codegen(line):
 
         try:
             if line[1] == "<=":
-                if line[2].startswith("(ptr)"):
-                    out.append(f"lea r12, [{''.join(line[2][5:])}]")
+                if isinstance(line[2], str):
+                    if line[2].startswith("[ptr]"):
+                        out.append(f"lea r12, [{''.join(line[2][5:])}]")
+                    else:
+                        out.append(f"mov r12, {line[2]}")
+
                 else:
-                    out.append(f"mov r12, {line[2]}")
+                    a = evalexpr(line[2])
+                    out.append(a)
+                    out.append(f"mov r12, rax")
 
                 try:
                     if line[3] == "<=":
-                        if line[4].startswith("(ptr)"):
-                            out.append(f"lea r13d, [{''.join(line[4][5:])}]")
+                        if isinstance(line[4], str):
+                            if line[4].startswith("[ptr]"):
+                                out.append(f"lea r13d, [{''.join(line[4][5:])}]")
+                            else:
+                                out.append(f"mov r13d, {line[4]}")
+
                         else:
-                            out.append(f"mov r13d, {line[4]}")
+                            a = evalexpr(line[4])
+                            out.append(a)
+                            out.append(f"mov r12, rax")
 
                         try:
                             if line[5] == "<=":
-                                if line[6].startswith("(ptr)"):
+                                if line[6].startswith("[ptr]"):
                                     out.append(f"lea r14, [{''.join(line[6][5:])}]")
                                 else:
                                     out.append(f"mov r14, {line[6]}")
