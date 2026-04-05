@@ -2,6 +2,7 @@ build/
 dist/
 bin/
 CLSharp/
+__pycache__/
 *.swp
 *.bat
 *.lshrp
