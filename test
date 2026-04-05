@@ -1,0 +1,30 @@
+.import inputtest.lshrp;
+varinit;
+
+byte hello <= 256;
+short hellolen => 256;
+short i => 0;
+short x => 0;
+
+func print => {
+	pop r12;
+	rdx <= [i];
+	i <= 0;
+	while ([r12+i] <!=> 0) {
+		stdout <= [r12+i] <= 1;
+		i += 1;
+	}
+	[i] <= rdx;
+}
+
+func _start => {
+	x <= 0;
+	while (x<<5) {
+		i <= 0;
+		input <= (ptr)hello <= [hellolen] <=(ptr)i;
+		x <= x+1;
+	}
+	if (i>>0) {
+		print; asm db "Hello", 0;
+	}
+}
