@@ -236,11 +236,11 @@ def codegen(line):
                 vartype[line[1]] = "byte"
             elif line[2] == "<=":
                 bss.append(f"{line[1]}: resb {line[3]}")
-                vartype[line[1]] = "byteptr"
+                vartype[line[1]] = "byte"
 
         except IndexError:
             bss.append(f"{line[1]}: resb 1")
-            vartype[line[1]] = "byteptr"
+            vartype[line[1]] = "byte"
 
     elif line[0] == "pipe":
         try:
@@ -248,8 +248,9 @@ def codegen(line):
                 pre.append(f"{line[1]} EQU {' '.join(line[2+1:])}")
             elif line[2] == "<=":
                 pre.append(f"{line[3]} EQU {line[1]}")
+            vartype[line[1]] = "pipe"
         except IndexError:
-            print(f"SyntaxError: At line {i}, expected '=>' or '<=' as definition, however nothing is found.")
+            print(f"SyntaxError: At line {currentline}, expected '=>' or '<=' as definition, however nothing is found.")
 
     elif line[0] == "short":
         try:
@@ -257,9 +258,12 @@ def codegen(line):
                 pre.append(f"{line[1]} dw {line[3]}")
                 vartype[line[1]] = "short"
 
+            else:
+                print(f"SyntaxError: At line {currentline}: unexpected character at the end of variable definition.")
+
         except IndexError:
             pre.append(f"{line[1]}: resb 2")
-            vartype[line[1]] = "shortptr"
+            vartype[line[1]] = "short"
 
     elif line[0] == "dword":
         if line[2] == "<=":
@@ -277,7 +281,11 @@ def codegen(line):
 
     elif line[0] == "return":
         try:
-            out.append(f"mov rax, {line[1]}")
+            if isinstance(line[1], str):
+                out.append(f"mov rdx, {line[1]}")
+            else:
+                a = evalexpr(line[1])
+                out.append(a)
         except IndexError:
             pass
         out.append("ret")
