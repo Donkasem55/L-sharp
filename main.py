@@ -151,7 +151,8 @@ def codegen(line):
         crsv += 1
         tscrsv = crsv
         crsv += 1
-        
+        scope.append("while")
+
         end = evalexpr(line[1])
         out += end
         out += "cmp rax, 0\n"
@@ -166,27 +167,52 @@ def codegen(line):
         out += f"jmp .LSCOMPRSVLAB{tlcrsv}\n"
         out += f".LSCOMPRSVLAB{tscrsv}:\n"
 
+        scope.pop()
+
     if line[0] == "include":
-        with open(f"{scr}/stdlib/{kernel}/{line[1]}") as f:
-            asm = f.read().splitlines()
-            include = asm[4:]
-            lnk = asm[0].split(" ")
-            lnk.pop(0)
+        if line[1].startswith("\""):
+            with open(f"{line[1:-1]}") as f:
+                asm = f.read().splitlines()
+                include = asm[4:]
+                lnk = asm[0].split(" ")
+                lnk.pop(0)
 
-            extern = asm[2].split(" ")
-            extern.pop(0)
+                extern = asm[2].split(" ")
+                extern.pop(0)
 
-            newlib = []
-            for j in include:
-                newlib.append(j)
+                newlib = []
+                for j in include:
+                    newlib.append(j)
 
-            libname = line[1].split(".")[0]
-            libs[libname] = newlib
+                libname = line[1].split(".")[0]
+                libs[libname] = newlib
 
-            for j in lnk:
-                links.append(j)
-            for j in extern:
-                externs.append(j)
+                for j in lnk:
+                    links.append(j)
+                for j in extern:
+                    externs.append(j)
+                    
+        else:
+            with open(f"{scr}/stdlib/{kernel}/{line[1]}") as f:
+                asm = f.read().splitlines()
+                include = asm[4:]
+                lnk = asm[0].split(" ")
+                lnk.pop(0)
+
+                extern = asm[2].split(" ")
+                extern.pop(0)
+
+                newlib = []
+                for j in include:
+                    newlib.append(j)
+
+                libname = line[1].split(".")[0]
+                libs[libname] = newlib
+
+                for j in lnk:
+                    links.append(j)
+                for j in extern:
+                    externs.append(j)
 
     elif line[0] == "entry":
         mainfn = line[1]
