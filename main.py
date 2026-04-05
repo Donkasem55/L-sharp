@@ -29,9 +29,9 @@ scr = str(os.path.abspath(os.path.dirname(__file__))).replace("\\", "/")
 d, ma = lex(scr, argd)
 print(d, "\n")
 data = parse_tst(d)
-printer = PrettyPrinter(indent=4, width=40)
-printer.pprint(data)
-sys.exit(0)
+# printer = PrettyPrinter(indent=4, width=40)
+# printer.pprint(data)
+# sys.exit(0)
 
 pre = []
 out = []
@@ -48,11 +48,13 @@ crsv = 0
 def evalexpr(line, dest="rax"):
     global crsv
     if isinstance(line, str):
-        return f"mov {dest}, {line}\n"
+        return f"""
+mov {dest}, {line}
+"""
 
-    op = line[1]
     left = line[0]
     right = line[2]
+    code = ""
 
     if len(line) >= 2:
         end = ""
@@ -61,17 +63,72 @@ def evalexpr(line, dest="rax"):
             code += evalexpr(right, "rbx")
             code += f"""
 cmp {dest}, rbx
-setne {dest[0]}l
+setne {dest[1]}l
             """
-            
 
-            
-        
+        elif line[1] == "<==>":
+            code += evalexpr(left, dest)
+            code += evalexpr(right, "rbx")
+            code += f"""
+cmp {dest}, rbx
+sete {dest[1]}l
+            """
+
+        elif line[1] == "<<":
+            code += evalexpr(left, dest)
+            code += evalexpr(right, "rbx")
+            code += f"""
+cmp {dest}, rbx
+setlt {dest[1]}l
+            """
+
+        elif line[1] == ">>":
+            code += evalexpr(left, dest)
+            code += evalexpr(right, "rbx")
+            code += f"""
+cmp {dest}, rbx
+setgt {dest[1]}l
+            """
+
+        elif line[1] == "<=":
+            code += evalexpr(left, dest)
+            code += evalexpr(right, "rbx")
+            code += f"""
+cmp {dest}, rbx
+setle {dest[1]}l
+            """
+
+        elif line[1] == ">=":
+            code += evalexpr(left, dest)
+            code += evalexpr(right, "rbx")
+            code += f"""
+cmp {dest}, rbx
+setge {dest[1]}l
+            """
+
+        elif line[1] == "+":
+            code += f"add {dest}, rbx\n"
+
+        elif line[1] == "-":
+            code += f"sub {dest}, rbx\n"
+
+        elif line[1] == "*":
+            code += f"imul {dest}, rbx\n"
+
+        elif line[1] == "/":
+            code += f"idiv {dest}, rbx\n"
+    
+    return code
+
+exprs = ["<!=>", "<==>", "<<", ">>", "<=", ">=", "+", "-", "*", "/"]
+# print(evalexpr([["a", "+", "b"], "<!=>", ["c", "-", "d"]]))
+# sys.exit(0)
 
 def codegen(line):
     global vartype, links, mainfn, libs, scope, fncs, externs, currentline
     if isinstance(line[0], list):
-        codegen(line[0])
+        for i in line:
+            codegen(i)
     pre, bss, out, = [], [], [], [], []
     end = ""
     i = 0
