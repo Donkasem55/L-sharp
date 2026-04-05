@@ -29,9 +29,6 @@ scr = str(os.path.abspath(os.path.dirname(__file__))).replace("\\", "/")
 d, ma = lex(scr, argd)
 print(d, "\n")
 data = parse_tst(d)
-# printer = PrettyPrinter(indent=4, width=40)
-# printer.pprint(data)
-# sys.exit(0)
 
 pre = []
 out = []
@@ -121,8 +118,6 @@ setge {dest[1]}l
     return code
 
 exprs = ["<!=>", "<==>", "<<", ">>", "<=", ">=", "+", "-", "*", "/"]
-# print(evalexpr([["a", "+", "b"], "<!=>", ["c", "-", "d"]]))
-# sys.exit(0)
 
 def codegen(line):
     global vartype, links, mainfn, libs, scope, fncs, externs, currentline
@@ -423,6 +418,8 @@ def codegen(line):
 
     currentline += 1
     return pre, bss, out
+
+pre, bss, out = codegen(data)
 
 out = ["section .text", f"global {mainfn}"] + out
        
