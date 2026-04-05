@@ -126,11 +126,15 @@ exprs = ["<!=>", "<==>", "<<", ">>", "<=", ">=", "+", "-", "*", "/"]
 
 def codegen(line):
     global vartype, links, mainfn, libs, scope, fncs, externs, currentline
+    pre, bss, out, = [], [], []
+    end = ""
     if isinstance(line[0], list):
         for i in line:
-            codegen(i)
-    pre, bss, out, = [], [], [], [], []
-    end = ""
+            a, b, c = codegen(i)
+            pre += a
+            bss += b
+            out += c
+
     i = 0
     if line == [] or line[0].startswith("//"):
         return [], [], []
@@ -142,9 +146,25 @@ def codegen(line):
     
 
     if line[0] == "while":
-        out += f".LSCOMPRSVLAB{crsv}:"
-
+        tlcrsv = crsv
+        out += f".LSCOMPRSVLAB{tlcrsv}:\n"
         crsv += 1
+        tscrsv = crsv
+        crsv += 1
+        
+        end = evalexpr(line[1])
+        out += end
+        out += "cmp rax, 0\n"
+        out += f"je .LSCOMPRSVLAB{tscrsv}\n"
+        if line[2] != "=>":
+            print(f"SyntaxError: Incomplete while loop, at line {currentline}.")
+
+        a, b, c = codegen(line[3])
+        pre += a
+        bss += b
+        out += c
+        out += f"jmp .LSCOMPRSVLAB{tlcrsv}\n"
+        out += f".LSCOMPRSVLAB{tscrsv}:\n"
 
     if line[0] == "include":
         with open(f"{scr}/stdlib/{kernel}/{line[1]}") as f:
