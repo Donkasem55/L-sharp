@@ -191,7 +191,7 @@ def codegen(line):
                     links.append(j)
                 for j in extern:
                     externs.append(j)
-                    
+
         else:
             with open(f"{scr}/stdlib/{kernel}/{line[1]}") as f:
                 asm = f.read().splitlines()
@@ -232,7 +232,7 @@ def codegen(line):
     elif line[0] == "byte":
         try:
             if line[2] == "=>":
-                pre.append(f"{line[1]} db {" ".join(line[3:])}")
+                pre.append(f"{line[1]} db {" ".join(line[2+1:])}")
                 vartype[line[1]] = "byte"
             elif line[2] == "<=":
                 bss.append(f"{line[1]}: resb {line[3]}")
@@ -245,11 +245,11 @@ def codegen(line):
     elif line[0] == "pipe":
         try:
             if line[2] == "=>":
-                pre.append(f"{line[1]} EQU {' '.join(line[3:])}")
+                pre.append(f"{line[1]} EQU {' '.join(line[2+1:])}")
             elif line[2] == "<=":
                 pre.append(f"{line[3]} EQU {line[1]}")
         except IndexError:
-            print(f"Error: At line {i}")
+            print(f"SyntaxError: At line {i}, expected '=>' or '<=' as definition, however nothing is found.")
 
     elif line[0] == "short":
         try:
