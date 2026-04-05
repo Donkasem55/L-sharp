@@ -21,7 +21,7 @@ func _start => {
 	x <= 0;
 	while (x<<5) {
 		i <= 0;
-		input <= (ptr)hello <= [hellolen] <=(ptr)i;
+		input <= [ptr]hello <= [hellolen] <=[ptr]i;
 		x <= x+1;
 	}
 	if (i>>0) {

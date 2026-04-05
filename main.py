@@ -1,5 +1,8 @@
 import sys, os
-import lex
+from lex import lex
+from tst import parse_tst
+
+from pprint import PrettyPrinter
 
 vartype = {}
 args = sys.argv[1:]
@@ -24,6 +27,11 @@ for i in args:
 kernel = argd["--kernel"]
 scr = str(os.path.abspath(os.path.dirname(__file__))).replace("\\", "/")
 d, ma = lex(scr, argd)
+print(d, "\n")
+data = parse_tst(d)
+printer = PrettyPrinter(indent=4, width=40)
+printer.pprint(data)
+sys.exit(0)
 
 pre = []
 out = []

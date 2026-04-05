@@ -104,45 +104,6 @@ def lex(scr, argd):
                     if comment:
                         comment = False
 
-                case "<":
-                    if not comment and not in_str:
-                        try:
-                            if data[j][k][-1] in ["<", ">", "="]:
-                                data[j][k] += lisx[i]
-                            else:
-                                data[j].append("<")
-                                k += 1
-                        except IndexError:
-                            data[j][k] += lisx[i]
-                    elif in_str:
-                        data[j][k] += lisx[i]
-                
-                case ">":
-                    if not comment and not in_str:
-                        try:
-                            if data[j][k][-1] in ["<", ">", "="]:
-                                data[j][k] += lisx[i]
-                            else:
-                                data[j].append(">")
-                                k += 1
-                        except IndexError:
-                            data[j][k] += lisx[i]
-                    elif in_str:
-                        data[j][k] += lisx[i]
-
-                case "=":
-                    if not comment and not in_str:
-                        try:
-                            if data[j][k][-1] in ["<", ">", "="]:
-                                data[j][k] += lisx[i]
-                            else:
-                                data[j].append("=")
-                                k += 1
-                        except IndexError:
-                            data[j][k] += lisx[i]
-                    elif in_str:
-                        data[j][k] += lisx[i]
-
                 case ";":
                     if not comment and not in_str:
                         data.append([""])
@@ -151,10 +112,23 @@ def lex(scr, argd):
                     elif in_str:
                         data[j][k] += lisx[i]
 
+                case "+" | "-" | "*" | "/" | "^" | "<" | ">" | "=" | "(" | ")":
+                    if not comment and not in_str:
+                        try:
+                            if data[j][k][-1] in ["<", ">", "=", "+", "-", "*", "/", "^"]:
+                                data[j][k] += lisx[i]
+                            else:
+                                data[j].append(lisx[i])
+                                k += 1
+                        except IndexError:
+                            data[j][k] += lisx[i]
+                    elif in_str:
+                        data[j][k] += lisx[i]
+
                 case _:
                     if not comment:
                         try:
-                            if in_str or (data[j][k][-1] not in ["<", ">", "="]):
+                            if in_str or (data[j][k][-1] not in ["<", ">", "=", "+", "-", "*", "/", "^", "(", ")"]):
                                 data[j][k] += lisx[i]
                             else:
                                 data[j].append(lisx[i])
