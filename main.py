@@ -157,7 +157,7 @@ def codegen(line):
         out += "cmp rax, 0\n"
         out += f"je .LSCOMPRSVLAB{tscrsv}\n"
         if line[2] != "=>":
-            print(f"SyntaxError: Incomplete while loop, at line {currentline}.")
+            print(f"SyntaxError: Incomplete while loop definition, at line {currentline}.")
 
         a, b, c = codegen(line[3])
         pre += a
@@ -428,6 +428,8 @@ out = ["section .text", f"global {mainfn}"] + out
        
 links = list(set(links))
 externs = list(set(externs))
+
+print(f"Total lines of L# code compiled: {currentline}")
 
 if "--output" not in argd:
     print(links)
