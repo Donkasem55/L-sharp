@@ -354,7 +354,7 @@ def codegen(line):
                         scope.append(f"{line[1]}")
                         fncs.append(line[1])
                     else:
-                        print(f"ScopeError: func {' '.join(line[1:])}, at line {i}: function definition outside 'global'")
+                        print(f"ScopeError: func {' '.join(line[1:])}, at line {currentline}: function definition outside 'global'")
                         sys.exit(1)
             except IndexError:
                 print(f"SyntaxError: func {line[1]}, at line {i}: incomplete function definition")
@@ -388,14 +388,21 @@ def codegen(line):
                         else:
                             a = evalexpr(line[4])
                             out.append(a)
-                            out.append(f"mov r12, rax")
+                            out.append(f"mov r13d, rax")
 
                         try:
                             if line[5] == "<=":
-                                if line[6].startswith("[ptr]"):
-                                    out.append(f"lea r14, [{''.join(line[6][5:])}]")
+                                if isinstance(line[4], str):
+                                    if line[6].startswith("[ptr]"):
+                                        out.append(f"lea r14, [{''.join(line[6][5:])}]")
+                                    else:
+                                        out.append(f"mov r14, {line[6]}")
+
                                 else:
-                                    out.append(f"mov r14, {line[6]}")
+                                    a = evalexpr(line[6])
+                                    out.append(a)
+                                    out.append(f"mov r14, rax")
+
                         except IndexError:
                             pass
 
@@ -407,14 +414,13 @@ def codegen(line):
                 elif line[0] in libs:
                     out = out + libs[line[0]]
                 else:
-                    print(f"NameError, {line[0]}, at line {i}: Undefined Function or Unimported Module")
+                    print(f"NameError, {line[0]}, at line {currentline}: Undefined Function or Unimported Module")
                     sys.exit(1)
 
         except IndexError:
             if line[0] in libs:
                 out = out + libs[line[0]]
 
-    i += 1
     currentline += 1
     return pre, bss, out
 
