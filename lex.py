@@ -112,10 +112,10 @@ def lex(scr, argd):
                     elif in_str:
                         data[j][k] += lisx[i]
 
-                case "+" | "-" | "*" | "/" | "^" | "<" | ">" | "=" | "(" | ")":
+                case "+" | "-" | "*" | "/" | "^" | "<" | ">" | "=" | "(" | ")" | "!":
                     if not comment and not in_str:
                         try:
-                            if data[j][k][-1] in ["<", ">", "=", "+", "-", "*", "/", "^"]:
+                            if data[j][k][-1] in ["<", ">", "=", "+", "-", "*", "/", "^", "(", ")", "!"]:
                                 data[j][k] += lisx[i]
                             else:
                                 data[j].append(lisx[i])
@@ -128,7 +128,7 @@ def lex(scr, argd):
                 case _:
                     if not comment:
                         try:
-                            if in_str or (data[j][k][-1] not in ["<", ">", "=", "+", "-", "*", "/", "^", "(", ")"]):
+                            if in_str or (data[j][k][-1] not in ["<", ">", "=", "+", "-", "*", "/", "^", "(", ")", "!"]):
                                 data[j][k] += lisx[i]
                             else:
                                 data[j].append(lisx[i])
