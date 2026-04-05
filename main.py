@@ -135,7 +135,6 @@ def codegen(line):
             bss += b
             out += c
 
-    i = 0
     if line == [] or line[0].startswith("//"):
         return [], [], []
 
@@ -229,6 +228,7 @@ def codegen(line):
                 bss = ["section .bss"] + bss
         except IndexError:
             bss = ["section .bss"]
+            
     elif line[0] == "byte":
         try:
             if line[2] == "=>":
@@ -286,18 +286,24 @@ def codegen(line):
             else:
                 a = evalexpr(line[1])
                 out.append(a)
+                out.append(f"mov rdx, rax")
         except IndexError:
             pass
         out.append("ret")
 
     elif line[0] == "=>":
-        out.append(f"jmp {line[1]}")
+        if isinstance(line[1], str):
+            out.append(f"jmp {line[1]}")
+        else:
+            a = evalexpr(line[1])
+            out.append(a)
+            out.append(f"jmp [rax]")
 
     else:
         try:
             if line[1] == "<=" and line[0] not in libs and line[0] not in fncs:
-                out.append(f"mov {line[0]}, {line[2]}")
-                i += 1
+                if isinstance(line[2], str):
+                    out.append(f"mov {line[0]}, {line[2]}")
 
             elif line[1] == "<":
                 match line[2]:
