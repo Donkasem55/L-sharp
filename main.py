@@ -228,7 +228,7 @@ def codegen(line):
                 bss = ["section .bss"] + bss
         except IndexError:
             bss = ["section .bss"]
-            
+
     elif line[0] == "byte":
         try:
             if line[2] == "=>":
@@ -304,20 +304,44 @@ def codegen(line):
             if line[1] == "<=" and line[0] not in libs and line[0] not in fncs:
                 if isinstance(line[2], str):
                     out.append(f"mov {line[0]}, {line[2]}")
+                else:
+                    a = evalexpr(line[2])
+                    out += a
+                    out.append(f"mov {line[0]}, rax")
 
             elif line[1] == "<":
                 match line[2]:
                     case "+":
-                        out.append(f"add {line[0]}, {line[3]}")
+                        if isinstance(line[3], str):
+                            out.append(f"add {line[0]}, {line[3]}")
+                        else:
+                            a = evalexpr(line[3])
+                            out.append(a)
+                            out.append(f"add {line[0]}, rax")
 
                     case "-":
-                        out.append(f"sub {line[0]}, {line[3]}")
+                        if isinstance(line[3], str):
+                            out.append(f"sub {line[0]}, {line[3]}")
+                        else:
+                            a = evalexpr(line[3])
+                            out.append(a)
+                            out.append(f"sub {line[0]}, rax")
 
                     case "*":
-                        out.append(f"imul {line[0]}, {line[3]}")
+                        if isinstance(line[3], str):
+                            out.append(f"imul {line[0]}, {line[3]}")
+                        else:
+                            a = evalexpr(line[3])
+                            out.append(a)
+                            out.append(f"imul {line[0]}, rax")
 
                     case "/":
-                        out.append(f"idiv {line[0]}, {line[3]}")
+                        if isinstance(line[3], str):
+                            out.append(f"idiv {line[0]}, {line[3]}")
+                        else:
+                            a = evalexpr(line[3])
+                            out.append(a)
+                            out.append(f"idiv {line[0]}, rax")
 
         except IndexError:
             pass
@@ -337,7 +361,7 @@ def codegen(line):
                 sys.exit(1)
         elif line[0] == "}":
             scope.pop()
-            if out[-1] != "ret":
+            if out[-1] != "ret" and (scope[-1] not in ["while", "for", "if", "else"]):
                 out.append("ret")
 
         try:
