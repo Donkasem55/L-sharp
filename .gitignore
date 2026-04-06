@@ -19,4 +19,5 @@ libraylibdll.a
 rayguiwrapper.o
 main.lshrp
 compiletest.bat
+inputtest.lshrp
 
