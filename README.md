@@ -162,6 +162,21 @@ while (<condition>) => {
     <while loop codeblock>
 }
 ```
+### struct 
+Declares a struct. Syntax:
+```
+struct <name> => {
+    <struct codeblock>
+}
+```
+Example:
+```
+struct wc => {
+    long 0;
+    long 5;
+    long 4;
+}
+```
 ###  return
 Ends a function. Syntax:
 ```
