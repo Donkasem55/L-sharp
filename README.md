@@ -207,5 +207,5 @@ With arguments:
 <function/stdlib name> <= arg1 <= arg2;
 ...
 ```
-L# currently only supports up to 3 arguments, stored in r12, r13d, and r14 respectively. Apologies for the inconvenience.
+L# currently only supports up to 4 arguments, stored in r12, r13d, r14, and r15 respectively. Apologies for the inconvenience. Support for stack-based arguments might come later.
 
