@@ -165,6 +165,7 @@ def codegen(line):
 
     if line[0] == "include":
         l = " ".join(line[1:]).split(".")
+        ln = ".".join(l[:len(l)-1])
         ext = l[-1]
         r = "/".join(l[:len(l)-1])
         lname = r + "." + ext
@@ -182,7 +183,7 @@ def codegen(line):
                 for j in include:
                     newlib.append(j)
 
-                libname = line[1].split(".")[0]
+                libname = ln
                 libs[libname] = newlib
 
                 for j in lnk:
@@ -204,7 +205,7 @@ def codegen(line):
                 for j in include:
                     newlib.append(j)
 
-                libname = lname.split(".")[0]
+                libname = ln
                 libs[libname] = newlib
 
                 for j in lnk:
