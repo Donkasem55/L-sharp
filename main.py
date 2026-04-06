@@ -164,8 +164,12 @@ def codegen(line):
         scope.pop()
 
     if line[0] == "include":
-        if line[1].startswith("\""):
-            with open(f"{line[1:-1]}") as f:
+        l = " ".join(line[1:]).split(".")
+        ext = l[-1]
+        r = "/".join(l[:len(l)-1])
+        lname = r + "." + ext
+        if lname.startswith("\""):
+            with open(f"{lname[1:-1]}") as f:
                 asm = f.read().splitlines()
                 include = asm[4:]
                 lnk = asm[0].split(" ")
@@ -187,7 +191,7 @@ def codegen(line):
                     externs.append(j)
 
         else:
-            with open(f"{scr}/stdlib/{kernel}/{line[1]}") as f:
+            with open(f"{scr}/stdlib/{kernel}/{lname}") as f:
                 asm = f.read().splitlines()
                 include = asm[4:]
                 lnk = asm[0].split(" ")
@@ -200,7 +204,7 @@ def codegen(line):
                 for j in include:
                     newlib.append(j)
 
-                libname = line[1].split(".")[0]
+                libname = lname.split(".")[0]
                 libs[libname] = newlib
 
                 for j in lnk:
