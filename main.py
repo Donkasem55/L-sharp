@@ -27,16 +27,15 @@ for i in args:
 kernel = argd["--kernel"]
 scr = str(os.path.abspath(os.path.dirname(__file__))).replace("\\", "/")
 d, ma = lex(scr, argd)
-print(d, "\n")
 data = parse_tst(d)
 
-pre = []
-out = []
+preg = []
+outg = []
 links = []
 externs = []
 mainfn = "_start"
 libs = {}
-bss = []
+bssg = []
 scope = ["global"]
 fncs = []
 currentline = 0
@@ -87,7 +86,7 @@ cmp {dest}, rbx
 setgt {dest[1]}l
             """
 
-        elif line[1] == "<=":
+        elif line[1] == "<<=":
             code += evalexpr(left, dest)
             code += evalexpr(right, "rbx")
             code += f"""
@@ -95,7 +94,7 @@ cmp {dest}, rbx
 setle {dest[1]}l
             """
 
-        elif line[1] == ">=":
+        elif line[1] == ">>=":
             code += evalexpr(left, dest)
             code += evalexpr(right, "rbx")
             code += f"""
@@ -117,40 +116,42 @@ setge {dest[1]}l
     
     return code
 
-exprs = ["<!=>", "<==>", "<<", ">>", "<=", ">=", "+", "-", "*", "/"]
+exprs = ["<!=>", "<==>", "<<", ">>", "<<=", ">>=", "+", "-", "*", "/"]
 
 def codegen(line):
     global vartype, links, mainfn, libs, scope, fncs, externs, currentline
     pre, bss, out, = [], [], []
     end = ""
+
+    if line == []:
+        return [], [], []
+    
     if isinstance(line[0], list):
         for i in line:
             a, b, c = codegen(i)
             pre += a
             bss += b
             out += c
-
-    if line == [] or line[0].startswith("//"):
-        return [], [], []
+        currentline += 1
+        return pre, bss, out
 
     for j in range(len(line)):
-        if line[j] in ma:
-            line[j] = ma[line[j]]
-
-    
+        if isinstance(line[j], str):
+            if line[j] in ma:
+                line[j] = ma[line[j]]
 
     if line[0] == "while":
         tlcrsv = crsv
-        out += f".LSCOMPRSVLAB{tlcrsv}:\n"
+        out.append(f"\n.LSCOMPRSVLAB{tlcrsv}:\n")
         crsv += 1
         tscrsv = crsv
         crsv += 1
         scope.append("while")
 
         end = evalexpr(line[1])
-        out += end
-        out += "cmp rax, 0\n"
-        out += f"je .LSCOMPRSVLAB{tscrsv}\n"
+        out.append(end)
+        out.append("cmp rax, 0\n")
+        out.append(f"je .LSCOMPRSVLAB{tscrsv}\n")
         if line[2] != "=>":
             print(f"SyntaxError: Incomplete while loop definition, at line {currentline}.")
 
@@ -158,8 +159,8 @@ def codegen(line):
         pre += a
         bss += b
         out += c
-        out += f"jmp .LSCOMPRSVLAB{tlcrsv}\n"
-        out += f".LSCOMPRSVLAB{tscrsv}:\n"
+        out.append(f"jmp .LSCOMPRSVLAB{tlcrsv}\n")
+        out.append(f".LSCOMPRSVLAB{tscrsv}:\n")
 
         scope.pop()
 
@@ -215,6 +216,14 @@ def codegen(line):
 
     elif line[0] == "entry":
         mainfn = line[1]
+    
+    elif line[0] == ".extfn":
+        if isinstance(line[1], str):
+            externs += line[1:]
+            fncs += line[1:]
+        else:
+            externs += line[1]
+            fncs += line[1:]
 
     elif line[0] == "varinit":
         try:
@@ -255,7 +264,7 @@ def codegen(line):
     elif line[0] == "short":
         try:
             if line[2] == "=>":
-                pre.append(f"{line[1]} dw {line[3]}")
+                pre.append(f"{line[1]} dw {' '.join(line[2+1:])}")
                 vartype[line[1]] = "short"
 
             else:
@@ -403,6 +412,22 @@ def codegen(line):
                                     out.append(a)
                                     out.append(f"mov r14, rax")
 
+                                try:
+                                    if line[7] == "<=":
+                                        if isinstance(line[6], str):
+                                            if line[8].startswith("[ptr]"):
+                                                out.append(f"lea r15, [{''.join(line[8][5:])}]")
+                                            else:
+                                                out.append(f"mov r15, {line[8]}")
+
+                                        else:
+                                            a = evalexpr(line[8])
+                                            out.append(a)
+                                            out.append(f"mov r15, rax")
+
+                                except IndexError:
+                                    pass
+
                         except IndexError:
                             pass
 
@@ -424,9 +449,9 @@ def codegen(line):
     currentline += 1
     return pre, bss, out
 
-pre, bss, out = codegen(data)
+preg, bssg, outg = codegen(data)
 
-out = ["section .text", f"global {mainfn}"] + out
+outg = ["section .text", f"global {mainfn}"] + outg
        
 links = list(set(links))
 externs = list(set(externs))
@@ -437,9 +462,9 @@ if "--output" not in argd:
     print(links)
     print(libs)
     print(externs, "\n")
-    print(pre)
-    print(bss)
-    print(out)
+    print(preg)
+    print(bssg)
+    print(outg)
 else:
     presys = ""
     for i in externs:
@@ -449,9 +474,9 @@ else:
         f.write(presys)
 
     with open(argd["--output"], "a") as f:
-        f.write("\n".join(pre) + "\n")
-        f.write("\n".join(bss) + "\n")
-        f.write("\n".join(out) + "\n")
+        f.write("\n".join(preg) + "\n")
+        f.write("\n".join(bssg) + "\n")
+        f.write("\n".join(outg) + "\n")
 
     if "--linkfile" in argd:
         with open(argd["--linkfile"], "w") as f:

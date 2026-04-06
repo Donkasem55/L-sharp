@@ -1,7 +1,7 @@
 PRECEDENCE = [
     ["*", "/", "%"],
     ["+", "-"],
-    ["<<", ">>", "<=", ">=", "<==>", "<!=>"]
+    ["<<", ">>", "<<=", ">>=", "<==>", "<!=>"]
 ]
 
 def fold_expr(tokens):
@@ -25,7 +25,7 @@ def fold_expr(tokens):
             else:
                 i += 1
 
-    return tokens[0] if len(tokens) == 1 else tokens
+    return [tokens[0]] if len(tokens) == 1 else tokens
 
 def ptst(datin, start=0):
     tst = []
@@ -47,8 +47,8 @@ def group(tst):
     out = []
     added = [[]]
     for i in tst:
-        if isinstance(i, list):
-            added[-1].append(group(i))
+        if isinstance(i, list): 
+            added.append(group(i))
         elif i == ";":
             added.append([])
         else:
@@ -58,13 +58,12 @@ def group(tst):
 
 def parse_tst(d):
     tst, _ = ptst(d)
-    print("\n", tst)
     grouped = group(tst)
-    print("\n", grouped)
 
     out = []
     for stmt in grouped:
         if stmt:
             out.append(fold_expr(stmt))
-
+    
+    print(out)
     return out
