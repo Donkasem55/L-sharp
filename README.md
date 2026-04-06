@@ -110,6 +110,24 @@ For uninitialised integers:
 ```
 short <variable name>;
 ```
+#### int
+Defines a 32-bit integer. Syntax:
+```
+int <variable name> => <initial value>;
+```
+For uninitialised integers:
+```
+int <variable name>;
+```
+#### long
+Defines a 64-bit integer. Syntax:
+```
+long <variable name> => <initial value>;
+```
+For uninitialised integers:
+```
+long <variable name>;
+```
 #### dword
 Defines a DWORD. Syntax:
 ```

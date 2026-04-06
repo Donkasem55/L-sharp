@@ -274,6 +274,32 @@ def codegen(line):
             pre.append(f"{line[1]}: resb 2")
             vartype[line[1]] = "short"
 
+    elif line[0] == "int":
+        try:
+            if line[2] == "=>":
+                pre.append(f"{line[1]} dd {' '.join(line[2+1:])}")
+                vartype[line[1]] = "int"
+
+            else:
+                print(f"SyntaxError: At line {currentline}: unexpected character at the end of variable definition.")
+
+        except IndexError:
+            pre.append(f"{line[1]}: resb 4")
+            vartype[line[1]] = "int"
+
+    elif line[0] == "long":
+        try:
+            if line[2] == "=>":
+                pre.append(f"{line[1]} dq {' '.join(line[2+1:])}")
+                vartype[line[1]] = "long"
+
+            else:
+                print(f"SyntaxError: At line {currentline}: unexpected character at the end of variable definition.")
+
+        except IndexError:
+            pre.append(f"{line[1]}: resb 8")
+            vartype[line[1]] = "long"
+
     elif line[0] == "dword":
         if line[2] == "<=":
             bss.append(f"{line[1]}: resd {line[3]}")
