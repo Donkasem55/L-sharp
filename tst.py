@@ -48,7 +48,7 @@ def group(tst):
     added = [[]]
     for i in tst:
         if isinstance(i, list): 
-            added.append(group(i))
+            added[-1].append(group(i))
         elif i == ";":
             added.append([])
         else:

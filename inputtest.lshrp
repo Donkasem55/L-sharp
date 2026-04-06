@@ -1,9 +1,0 @@
-include stdin.asm;
-include stdout.asm;
-include exit.asm;
-
-func input => {
-	stdin <= r12 <= r13d <= r14;
-	stdout <= r12 <= r13d; // Write hello to console:
-	exit <= 0;
-}

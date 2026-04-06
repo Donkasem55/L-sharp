@@ -133,20 +133,21 @@ def strctgen(line):
                 out += f"resq {line[2]}"
 
         case "byte":
-            out += f"db {" ".join(line[2:])}"
+            out += f"db {" ".join(line[1:])}"
 
         case "short":
-            out += f"dw {" ".join(line[2:])}"
+            out += f"dw {" ".join(line[1:])}"
             
         case "dword" | "int":
-            out += f"dd {" ".join(line[2:])}"
+            out += f"dd {" ".join(line[1:])}"
             
         case "long":
-            out += f"dq {" ".join(line[2:])}"
+            out += f"dq {" ".join(line[1:])}"
 
     return out
 
 def codegen(line):
+    print(line)
     global vartype, links, mainfn, libs, scope, fncs, externs, currentline
     pre, bss, out, = [], [], []
     end = ""
@@ -199,8 +200,9 @@ def codegen(line):
 
         res = ""
         for i in line[3]:
-            res += strctgen(i)
-            res += "\n"
+            if i:
+                res += strctgen(i)
+                res += "\n"
         
         out.append(res)
 
@@ -428,6 +430,11 @@ def codegen(line):
                         out.append(f"{line[1]}:")
                         scope.append(f"{line[1]}")
                         fncs.append(line[1])
+                        for i in line[3]:
+                            a, b, c = codegen(i)
+                            pre += a
+                            bss += b
+                            out += c
                     else:
                         print(f"ScopeError: func {' '.join(line[1:])}, at line {currentline}: function definition outside 'global'")
                         sys.exit(1)
