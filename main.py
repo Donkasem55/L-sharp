@@ -118,6 +118,34 @@ setge {dest[1]}l
 
 exprs = ["<!=>", "<==>", "<<", ">>", "<<=", ">>=", "+", "-", "*", "/"]
 
+def strctgen(line):
+    tp = line[0]
+    out = ""
+    match tp:
+        case "reserve":
+            if line[1] == "byte":
+                out += f"resb {line[2]}"
+            elif line[1] == "short":
+                out += f"resw {line[2]}"
+            elif line[1] in ["dword", "int"]:
+                out += f"resd {line[2]}"
+            elif line[1] == "long":
+                out += f"resq {line[2]}"
+
+        case "byte":
+            out += f"db {" ".join(line[2:])}"
+
+        case "short":
+            out += f"dw {" ".join(line[2:])}"
+            
+        case "dword" | "int":
+            out += f"dd {" ".join(line[2:])}"
+            
+        case "long":
+            out += f"dq {" ".join(line[2:])}"
+
+    return out
+
 def codegen(line):
     global vartype, links, mainfn, libs, scope, fncs, externs, currentline
     pre, bss, out, = [], [], []
@@ -163,6 +191,18 @@ def codegen(line):
         out.append(f".LSCOMPRSVLAB{tscrsv}:\n")
 
         scope.pop()
+
+    if line[0] == "struct":
+        out.append(f"{line[1]}:")
+        if line[2] != "=>":
+            print(f"SyntaxError: Incomplete struct definition, at line {currentline}.")
+
+        res = ""
+        for i in line[3]:
+            res += strctgen(i)
+            res += "\n"
+        
+        out.append(res)
 
     if line[0] == "include":
         l = " ".join(line[1:]).split(".")
